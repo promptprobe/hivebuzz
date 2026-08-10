@@ -26,6 +26,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEven
 import type { AgentSnapshotScanResult } from "@/lib/snapshot-scan";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
+import { loadCatalogDownloadCounts, mergeDownloadCounts } from "@/lib/catalog-client";
 import { AGENT_CATEGORIES, type AgentCategory, type AgentHarness, type ReleaseRecord } from "@/lib/hive-contract";
 
 interface HiveAppProps {
@@ -167,18 +168,13 @@ export function HiveApp({ initialReleases }: HiveAppProps) {
   const categoryDragRef = useRef({ pointerId: -1, startX: 0, scrollLeft: 0, moved: false, suppressClick: false });
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/releases", { cache: "no-store", signal: controller.signal })
-      .then((response) => response.json() as Promise<{ releases?: ReleaseRecord[] }>)
-      .then((data) => {
-        if (!data.releases?.length) return;
-        setReleases(data.releases);
-        setSelectedKey((current) => data.releases?.some((release) => release.key === current)
-          ? current
-          : data.releases?.[0]?.key ?? "");
+    let active = true;
+    loadCatalogDownloadCounts()
+      .then((counts) => {
+        if (active) setReleases((current) => mergeDownloadCounts(current, counts));
       })
       .catch(() => undefined);
-    return () => controller.abort();
+    return () => { active = false; };
   }, []);
 
   useEffect(() => {

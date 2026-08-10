@@ -41,7 +41,7 @@ const PROMPT_EVALS = [
 test("new Agent prompts are structured, portable, and bounded", async () => {
   for (const id of NEW_AGENT_IDS) {
     const bytes = await readFile(new URL(`../public/agents/${id}-1.0.0.agent.json`, import.meta.url));
-    const snapshot = JSON.parse(bytes.toString("utf8"));
+    const snapshot = JSON.parse(new TextDecoder().decode(bytes));
     const prompt = snapshot.definition.systemPrompt as string;
     const wordCount = prompt.trim().split(/\s+/).length;
 

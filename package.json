@@ -10,6 +10,8 @@
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
+    "benchmark": "tsx scripts/performance-benchmark.ts",
+    "performance:check": "npm run build && npm run benchmark -- --label=check --output=/tmp/hivebuzz-performance-check.json --check",
     "test": "npm run build && node --test tests/rendered-html.test.mjs && tsx --test tests/*.test.ts",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
@@ -35,7 +37,7 @@
     "tailwindcss": "4.2.1",
     "tsx": "4.22.1",
     "typescript": "5.9.3",
-    "vinext": "0.0.50",
+    "vinext": "0.0.45",
     "vite": "^8.2.0",
     "wrangler": "^4.118.0"
   },

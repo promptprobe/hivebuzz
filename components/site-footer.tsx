@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { loadCatalogDownloadCounts } from "@/lib/catalog-client";
 
 type ServiceState = "checking" | "operational" | "degraded";
 
@@ -9,23 +10,20 @@ export function SiteFooter() {
   const [serviceState, setServiceState] = useState<ServiceState>("checking");
 
   useEffect(() => {
-    const controller = new AbortController();
+    let active = true;
 
-    fetch("/api/releases", { cache: "no-store", signal: controller.signal })
-      .then((response) => setServiceState(response.ok ? "operational" : "degraded"))
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setServiceState("degraded");
-      });
+    loadCatalogDownloadCounts()
+      .then(() => { if (active) setServiceState("operational"); })
+      .catch(() => { if (active) setServiceState("degraded"); });
 
-    return () => controller.abort();
+    return () => { active = false; };
   }, []);
 
   const statusLabel = serviceState === "operational"
-    ? "System Operational"
+    ? "Catalog Available"
     : serviceState === "degraded"
-      ? "System Degraded"
-      : "Checking System";
+      ? "Catalog Refresh Unavailable"
+      : "Checking Catalog";
 
   return (
     <footer className="site-footer">

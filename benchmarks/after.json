@@ -1,0 +1,53 @@
+{
+  "label": "after",
+  "generatedAt": "2026-08-10T23:42:08.830Z",
+  "node": "v24.18.1",
+  "rendering": {
+    "samples": 30,
+    "p50Ms": 4.625,
+    "p95Ms": 11.365,
+    "htmlBytes": 51692,
+    "htmlGzipBytes": 8752,
+    "preloadedFontFileCount": 0,
+    "preloadedFontBytes": 0,
+    "absoluteWorkspacePreloadCount": 0,
+    "preloadedImageHrefs": [
+      "/hivebuzz-hero-dotted-mobile-v2.webp",
+      "/hivebuzz-hero-dotted-v2.webp"
+    ]
+  },
+  "client": {
+    "initialJavascriptFiles": [
+      "assets/framework-C3gC7n6v.js",
+      "assets/index-DSyYYS0G.js",
+      "assets/rolldown-runtime-hePW80VL.js"
+    ],
+    "initialJavascriptRawBytes": 244755,
+    "initialJavascriptGzipBytes": 76664,
+    "cssRawBytes": 43232,
+    "cssGzipBytes": 9248,
+    "fontFileCount": 0,
+    "fontBytes": 0,
+    "monoFontFileCount": 0,
+    "monoFontBytes": 0
+  },
+  "catalogBootstrap": {
+    "staticRequestCallSites": 1,
+    "requestUrls": [
+      "/api/releases?view=counts"
+    ],
+    "fullCatalogResponseBytes": 13927,
+    "countSummaryResponseBytes": 460,
+    "countSummaryCacheControl": "public, max-age=10, s-maxage=30, stale-while-revalidate=300",
+    "estimatedBootstrapTransferBytes": 460
+  },
+  "heroImages": {
+    "hivebuzz-hero-dotted-v2.webp": 469382,
+    "hivebuzz-guide-dotted-v2.webp": 351910,
+    "hivebuzz-submit-dotted-v2.webp": 298190,
+    "hivebuzz-hero-dotted-mobile-v2.webp": 137646,
+    "hivebuzz-guide-dotted-mobile-v2.webp": 114076,
+    "hivebuzz-submit-dotted-mobile-v2.webp": 88986
+  },
+  "referencedHeroAssetInventoryBytes": 1460190
+}
