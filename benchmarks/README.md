@@ -18,17 +18,17 @@ Cloudflare latency claims.
 
 | Metric | Before | After | Change |
 | --- | ---: | ---: | ---: |
-| Home major initial byte budget, desktop | 1,060,357 B | 587,620 B | 44.6% less |
-| Home major initial byte budget, mobile | 1,060,357 B | 255,884 B | 75.9% less |
+| Home major initial byte budget, desktop | 1,060,357 B | 564,506 B | 46.8% less |
+| Home major initial byte budget, mobile | 1,060,357 B | 232,770 B | 78.0% less |
 | Home hero, desktop | 767,648 B | 469,382 B | 38.9% less |
 | Home hero, mobile | 767,648 B | 137,646 B | 82.1% less |
 | Static catalog bootstrap byte estimate | 27,854 B, 2 call sites | 460 B, 1 shared call site | 98.3% less |
 | Preloaded webfonts | 146,464 B, 11 files | 0 B, 0 files | removed |
-| Home HTML | 58,998 B | 52,404 B | 11.2% less |
-| Home HTML, gzip | 9,935 B | 8,977 B | 9.6% less |
-| Local Worker render p50 | 13.783 ms | 17.274 ms, latest run | inconclusive |
-| Local Worker render p95 | 32.978 ms | 54.933 ms, latest run | inconclusive |
-| Initial JavaScript, gzip | 99,260 B | 99,553 B | 0.3% more |
+| Home HTML | 58,998 B | 51,692 B | 12.4% less |
+| Home HTML, gzip | 9,935 B | 8,752 B | 11.9% less |
+| Local Worker render p50 | 13.783 ms | 4.625 ms | 66.4% lower |
+| Local Worker render p95 | 32.978 ms | 11.365 ms | 65.5% lower |
+| Initial JavaScript, gzip | 99,260 B | 76,664 B | 22.8% less |
 
 The major initial byte budget combines gzipped HTML, initial JavaScript and
 CSS, eagerly preloaded font bytes, the selected hero image, and the catalog
@@ -44,15 +44,11 @@ JavaScript and CSS, font preloads, catalog call sites, responsive home images,
 and the major initial byte estimate. Timing stays report only because shared CI
 latency is too noisy for a stable gate.
 
-That timing warning is material: two consecutive final after runs produced
-p50 values of 7.450 ms and 17.274 ms, with p95 values of 11.853 ms and 54.933
-ms. The range crosses the before snapshot, so this report makes no local render
-latency improvement claim. The byte, request, cache, and query-shape results are
-deterministic and are the measured improvements used for the release gate.
-
-The small JavaScript increase is the shared, validated download count loader.
-It replaces two full catalog fetches and keeps the immutable manifest catalog
-in the server rendered page.
+Three consecutive final after runs produced p50 values from 3.745 ms to 4.625
+ms and p95 values from 5.692 ms to 11.365 ms, all below the before snapshot.
+This remains a local proxy rather than a production latency claim. The byte,
+request, cache, and query-shape results are deterministic and are the measured
+improvements used for the release gate.
 
 ## Bottlenecks found
 
@@ -80,6 +76,9 @@ in the server rendered page.
   Responsive high priority preloads expose the LCP image before CSS discovery.
 - The UI uses the system sans and monospace stacks, removing all webfont
   requests. The static production metadata no longer reads request headers.
+- The validated vinext 0.0.45 build removes the vulnerable image-size build
+  dependency and emits a smaller initial client bundle while preserving every
+  rendered and API regression test.
 - The footer reports catalog availability rather than making a broader system
   health claim from a briefly cached count response.
 - Regression tests enforce hero budgets, one count endpoint call site, no

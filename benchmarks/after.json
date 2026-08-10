@@ -1,13 +1,13 @@
 {
   "label": "after",
-  "generatedAt": "2026-08-10T19:16:25.629Z",
+  "generatedAt": "2026-08-10T23:42:08.830Z",
   "node": "v24.18.1",
   "rendering": {
     "samples": 30,
-    "p50Ms": 17.274,
-    "p95Ms": 54.933,
-    "htmlBytes": 52404,
-    "htmlGzipBytes": 8977,
+    "p50Ms": 4.625,
+    "p95Ms": 11.365,
+    "htmlBytes": 51692,
+    "htmlGzipBytes": 8752,
     "preloadedFontFileCount": 0,
     "preloadedFontBytes": 0,
     "absoluteWorkspacePreloadCount": 0,
@@ -18,17 +18,12 @@
   },
   "client": {
     "initialJavascriptFiles": [
-      "assets/Icon-DVbubpM7.js",
-      "assets/framework-DLP1zmWw.js",
-      "assets/hive-app-jhwS-yfz.js",
-      "assets/hive-contract-DWSeDa5B.js",
-      "assets/index-h3leF4aR.js",
-      "assets/link-Xo35qXBy.js",
-      "assets/rolldown-runtime-hePW80VL.js",
-      "assets/site-footer-DFGRk709.js"
+      "assets/framework-C3gC7n6v.js",
+      "assets/index-DSyYYS0G.js",
+      "assets/rolldown-runtime-hePW80VL.js"
     ],
-    "initialJavascriptRawBytes": 317097,
-    "initialJavascriptGzipBytes": 99553,
+    "initialJavascriptRawBytes": 244755,
+    "initialJavascriptGzipBytes": 76664,
     "cssRawBytes": 43232,
     "cssGzipBytes": 9248,
     "fontFileCount": 0,
