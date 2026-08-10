@@ -1,47 +1,57 @@
-import { ensureCatalog, getD1 } from "@/db";
-import { recordFromManifest, validateManifest, type ReleaseRecord, type RiskLevel } from "@/lib/hive";
+import { getD1 } from "@/db";
+import { CATALOG_RELEASES } from "@/lib/catalog-seeds";
 
-interface ReleaseRow {
+interface DownloadRow {
   release_key: string;
-  manifest_json: string;
-  risk_level: RiskLevel;
-  created_at: number;
-  download_count: number;
+  count: number;
 }
 
-function json(data: unknown, init: ResponseInit = {}) {
+const RELEASE_KEYS = CATALOG_RELEASES.map((release) => release.key);
+
+function json(data: unknown, init: ResponseInit = {}, cacheable = false) {
   const headers = new Headers(init.headers);
-  headers.set("cache-control", "no-store");
+  headers.set(
+    "cache-control",
+    cacheable ? "public, max-age=10, s-maxage=30, stale-while-revalidate=300" : "no-store",
+  );
   headers.set("x-content-type-options", "nosniff");
   return Response.json(data, { ...init, headers });
 }
 
-export async function GET() {
-  try {
-    await ensureCatalog();
-    const db = await getD1();
-    const result = await db.prepare(`
-      SELECT
-        r.release_key,
-        r.manifest_json,
-        r.risk_level,
-        r.created_at,
-        COALESCE(d.count, 0) AS download_count
-      FROM releases r
-      LEFT JOIN downloads d ON d.release_key = r.release_key
-      ORDER BY r.created_at DESC
-      LIMIT 100
-    `).all<ReleaseRow>();
+async function readDownloadCounts(db: Pick<D1Database, "prepare">) {
+  const placeholders = RELEASE_KEYS.map(() => "?").join(", ");
+  const result = await db.prepare(`
+    SELECT release_key, count
+    FROM downloads
+    WHERE release_key IN (${placeholders})
+  `).bind(...RELEASE_KEYS).all<DownloadRow>();
 
-    const releases: ReleaseRecord[] = [];
-    for (const row of result.results) {
-      const parsed = JSON.parse(row.manifest_json) as unknown;
-      const validation = validateManifest(parsed, { allowRelativeArtifact: true });
-      if (!validation.ok || !validation.value) continue;
-      const record = recordFromManifest(validation.value, Number(row.created_at), Number(row.download_count));
-      if (record.key === row.release_key && record.riskLevel === row.risk_level) releases.push(record);
+  const downloadCounts = Object.fromEntries(RELEASE_KEYS.map((key) => [key, 0]));
+  for (const row of result.results) {
+    if (row.release_key in downloadCounts) downloadCounts[row.release_key] = Number(row.count);
+  }
+  return downloadCounts;
+}
+
+export async function getReleaseResponse(request: Request, db: Pick<D1Database, "prepare">) {
+  try {
+    const downloadCounts = await readDownloadCounts(db);
+    if (new URL(request.url).searchParams.get("view") === "counts") {
+      return json({ downloadCounts }, {}, true);
     }
+    const releases = CATALOG_RELEASES.map((release) => ({
+      ...release,
+      downloadCount: downloadCounts[release.key] ?? 0,
+    }));
     return json({ releases });
+  } catch (error) {
+    return json({ error: error instanceof Error ? error.message : "Catalog is unavailable." }, { status: 500 });
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    return await getReleaseResponse(request, await getD1());
   } catch (error) {
     return json({ error: error instanceof Error ? error.message : "Catalog is unavailable." }, { status: 500 });
   }

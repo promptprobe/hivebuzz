@@ -16,6 +16,7 @@
   --red-soft: #faeeee;
   --amber-dark: #6e4a00;
   --shadow: 0 22px 70px rgba(23, 23, 20, 0.14);
+  --font-geist-mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 * {
@@ -30,7 +31,7 @@ html {
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   margin: 0;
   -webkit-font-smoothing: antialiased;
 }
@@ -210,21 +211,21 @@ button:disabled {
     linear-gradient(90deg, rgba(5, 20, 29, 0.97) 0%, rgba(5, 20, 29, 0.84) 29%, rgba(5, 20, 29, 0.22) 61%, rgba(5, 20, 29, 0.03) 100%),
     linear-gradient(0deg, rgba(30, 25, 10, 0.58) 0%, transparent 42%),
     linear-gradient(180deg, rgba(244, 185, 66, 0.1) 0%, transparent 36%),
-    url("/hivebuzz-hero-dotted.webp");
+    url("/hivebuzz-hero-dotted-v2.webp");
 }
 
 .guide-skin {
   background-image:
     linear-gradient(90deg, rgba(5, 20, 29, 0.97) 0%, rgba(5, 20, 29, 0.83) 30%, rgba(5, 20, 29, 0.18) 61%, rgba(5, 20, 29, 0.02) 100%),
     linear-gradient(0deg, rgba(30, 25, 10, 0.54) 0%, transparent 42%),
-    url("/hivebuzz-guide-dotted.webp");
+    url("/hivebuzz-guide-dotted-v2.webp");
 }
 
 .submit-skin {
   background-image:
     linear-gradient(90deg, rgba(5, 20, 29, 0.97) 0%, rgba(5, 20, 29, 0.82) 30%, rgba(5, 20, 29, 0.16) 61%, rgba(5, 20, 29, 0.02) 100%),
     linear-gradient(0deg, rgba(30, 25, 10, 0.56) 0%, transparent 42%),
-    url("/hivebuzz-submit-dotted.webp");
+    url("/hivebuzz-submit-dotted-v2.webp");
 }
 
 .skin-topbar {
@@ -2507,7 +2508,7 @@ button:disabled {
       linear-gradient(90deg, rgba(4, 17, 29, 0.94) 0%, rgba(4, 17, 29, 0.68) 56%, rgba(4, 17, 29, 0.15) 100%),
       linear-gradient(0deg, rgba(4, 17, 29, 0.72) 0%, transparent 48%),
       linear-gradient(180deg, rgba(244, 185, 66, 0.12) 0%, transparent 34%),
-      url("/hivebuzz-hero-dotted.webp");
+      url("/hivebuzz-hero-dotted-mobile-v2.webp");
     background-position: 64% center;
   }
 
@@ -2515,7 +2516,7 @@ button:disabled {
     background-image:
       linear-gradient(90deg, rgba(4, 17, 29, 0.96) 0%, rgba(4, 17, 29, 0.76) 57%, rgba(4, 17, 29, 0.12) 100%),
       linear-gradient(0deg, rgba(4, 17, 29, 0.7) 0%, transparent 48%),
-      url("/hivebuzz-guide-dotted.webp");
+      url("/hivebuzz-guide-dotted-mobile-v2.webp");
     background-position: 70% center;
   }
 
@@ -2523,7 +2524,7 @@ button:disabled {
     background-image:
       linear-gradient(90deg, rgba(4, 17, 29, 0.96) 0%, rgba(4, 17, 29, 0.76) 57%, rgba(4, 17, 29, 0.12) 100%),
       linear-gradient(0deg, rgba(4, 17, 29, 0.7) 0%, transparent 48%),
-      url("/hivebuzz-submit-dotted.webp");
+      url("/hivebuzz-submit-dotted-mobile-v2.webp");
     background-position: 70% center;
   }
 

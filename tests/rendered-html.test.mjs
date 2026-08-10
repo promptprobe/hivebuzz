@@ -74,6 +74,10 @@ test("server-renders the finished HiveBuzz product", async () => {
   assert.match(html, /<meta property="og:url" content="https?:\/\/[^\"]+\/\?card=20260803-final"\/>/);
   assert.match(html, /<meta property="og:image" content="https?:\/\/[^\"]+\/hivebuzz-social-card-20260803\.png\?card=20260803-final"\/>/);
   assert.match(html, /<meta name="twitter:image" content="https?:\/\/[^\"]+\/hivebuzz-social-card-20260803\.png\?card=20260803-final"\/>/);
+  assert.match(html, /href="\/hivebuzz-hero-dotted-mobile-v2\.webp"/);
+  assert.match(html, /href="\/hivebuzz-hero-dotted-v2\.webp"/);
+  assert.doesNotMatch(html, /<link[^>]+rel="preload"[^>]+as="font"/);
+  assert.doesNotMatch(html, /\/Users\/[^\"]+\.woff2/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
 });
 
@@ -122,7 +126,7 @@ test("server-renders the privacy and terms routes", async () => {
   const [privacyHtml, termsHtml] = await Promise.all([privacyResponse.text(), termsResponse.text()]);
   assert.match(privacyHtml, /Minimal data by design/);
   assert.match(privacyHtml, /Local file inspection/);
-  assert.match(privacyHtml, /Checking System/);
+  assert.match(privacyHtml, /Checking Catalog/);
   assert.match(termsHtml, /Download first\. Trust last\./);
   assert.match(termsHtml, /No automatic execution/);
   assert.match(termsHtml, /Contribute_hivebuzz/);
@@ -184,8 +188,13 @@ test("removes disposable starter assets and metadata", async () => {
   await access(new URL("../public/hivebuzz-social-card-20260803.png", import.meta.url));
   await access(new URL("../public/icon.png", import.meta.url));
   await access(new URL("../public/hive-mark.png", import.meta.url));
-  await access(new URL("../public/hivebuzz-guide-dotted.webp", import.meta.url));
-  await access(new URL("../public/hivebuzz-submit-dotted.webp", import.meta.url));
+  await access(new URL("../public/hivebuzz-guide-dotted-v2.webp", import.meta.url));
+  await access(new URL("../public/hivebuzz-guide-dotted-mobile-v2.webp", import.meta.url));
+  await access(new URL("../public/hivebuzz-submit-dotted-v2.webp", import.meta.url));
+  await access(new URL("../public/hivebuzz-submit-dotted-mobile-v2.webp", import.meta.url));
+  await assert.rejects(access(new URL("../public/hivebuzz-hero-dotted.webp", import.meta.url)));
+  await assert.rejects(access(new URL("../public/hivebuzz-guide-dotted.webp", import.meta.url)));
+  await assert.rejects(access(new URL("../public/hivebuzz-submit-dotted.webp", import.meta.url)));
 });
 
 test("Persona Pack distribution is removed", async () => {

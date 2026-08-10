@@ -78,6 +78,10 @@ const worker = {
       return withSecurityHeaders(response);
     }
 
+    if (url.pathname.startsWith("/api/")) {
+      return withSecurityHeaders(await handler.fetch(request, env, ctx));
+    }
+
     const nonce = crypto.randomUUID().replaceAll("-", "");
     const contentSecurityPolicy = siteContentSecurityPolicy(nonce);
     const requestHeaders = new Headers(request.headers);

@@ -128,11 +128,23 @@ Validation:
 
 ```bash
 npm run lint
+npm run performance:check
 npm test
 npm audit
 ```
 
-The shared D1 database stores curated release metadata and one aggregate count
-per release. Schema changes and cleanup run once through migrations. Catalog
-data is synchronized only when its content version changes, rather than being
-rewritten for every fresh Worker isolate.
+Performance benchmark:
+
+```bash
+npm run build
+npm run benchmark -- --label=current --output=benchmarks/current.json
+```
+
+See [benchmarks/README.md](benchmarks/README.md) for the checked before and
+after snapshots, methodology, byte budgets, and production baseline.
+
+The deployable catalog is bundled from reviewed source. D1 stores one aggregate
+download count per release; catalog reads query only those counters and merge
+them into the immutable server catalog. Schema changes run through migrations,
+and the release rows needed by the guarded counter write are synchronized only
+when the catalog content version changes.
