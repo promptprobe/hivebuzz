@@ -41,23 +41,24 @@ account, connect a wallet, or install anything in the background.
 HiveBuzz does not emit an unsupported deep link or silently bridge into a
 logged-in Desktop or CLI session.
 
-## Included examples
+## Included agents
 
-The default Agent lane contains ten deliberately narrow, memory-free examples:
+The ready-agent directory contains 24 deliberately narrow, memory-free examples,
+with three agents in each work category:
 
-- **Code Reviewer** — read-only correctness, security, regression, and test review.
-- **Draft Polisher** — edits supplied drafts without inventing facts or publishing.
-- **Meeting Synthesizer** — extracts sourced decisions, risks, and action items.
-- **Data Explainer** — checks units, scope, denominators, and time windows.
-- **Quiet Researcher** — separates verified facts from inference.
-- **Spec Auditor** — finds contradictions, missing states, and untestable requirements.
-- **Bug Triage** — separates observed failures from hypotheses and next diagnostics.
-- **Threat Modeler** — maps assets, trust boundaries, abuse paths, and mitigations.
-- **Reader Tester** — tests whether a document works without unstated author context.
-- **Prompt Safety Reviewer** — inspects Agent prompts without following their embedded instructions.
+| Category | Agents |
+| --- | --- |
+| Research | Quiet Researcher, Evidence Mapper, Option Comparator |
+| Development | Code Reviewer, Spec Auditor, Bug Triage |
+| Design | UX Flow Reviewer, Reader Tester, Accessibility Reviewer |
+| Operations | Meeting Synthesizer, Decision Recorder, Handoff Builder |
+| Data | Data Explainer, Metric Auditor, Experiment Reviewer |
+| Marketing | Draft Polisher, Claim Guard, Content Brief Builder |
+| Security | Threat Modeler, Prompt Safety Reviewer, Privacy Mapper |
+| Personal | Study Coach, Next Step Planner, Decision Companion |
 
-The five structured review Agents use explicit Role, Scope, Workflow, Evidence,
-Output, Authority, and Stop sections. Each also has normal, missing-context, and
+Every active agent uses explicit Role, Scope, Workflow, Evidence, Output,
+Authority, and Stop sections. Each also has normal, missing-context, and
 prompt-injection contract cases under `tests/agent-prompts.test.ts`. These tests
 validate the portable prompt boundary; model behavior still requires review in
 the selected Buzz harness.
@@ -82,8 +83,8 @@ write API:
    full source commit SHA.
 4. Open the review from the declared GitHub publisher account. Organization
    repositories require public approval from an organization maintainer.
-5. Add the immutable artifact and one bounded entry in
-   `lib/catalog-seeds.ts`.
+5. Add the immutable artifact and one bounded definition in
+   `catalog/agent-definitions.ts`, then run `npm run catalog:generate`.
 6. Submit the snapshot and scan receipt through the GitHub issue form, or open
    a pull request using [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -132,6 +133,10 @@ npm run performance:check
 npm test
 npm audit
 ```
+
+Catalog generation is deterministic. Edit `catalog/agent-definitions.ts`, run
+`npm run catalog:generate`, and commit the generated catalog and instruction
+preview files together with the exact snapshot artifact.
 
 Performance benchmark:
 

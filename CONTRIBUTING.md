@@ -26,7 +26,8 @@ Buzz key, real name, or email is requested.
 1. Fork this repository and create a focused branch.
 2. Put the immutable artifact at
    `public/agents/<slug>-<version>.agent.json` (JSON is preferred).
-3. Add one bounded manifest entry to `lib/catalog-seeds.ts`.
+3. Add one bounded definition to `catalog/agent-definitions.ts`, then run
+   `npm run catalog:generate` to refresh the generated catalog and previews.
 4. Keep Agent Snapshot capabilities empty: no commands, hooks, MCP servers,
    filesystem access, or network hosts.
 5. Use one category: `research`, `development`, `design`, `operations`, `data`,

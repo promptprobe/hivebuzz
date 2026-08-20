@@ -97,10 +97,35 @@ test("blocks additional known credentials, encoded private keys, and spoofing co
     assert.match(result.hardErrors.join(" "), /private key|credential/i);
   }
 
+  const encodedKey = Buffer.from("-----BEGIN PRIVATE KEY-----\nexample\n-----END PRIVATE KEY-----").toString("base64");
+  const disguised = { ...base, definition: { ...base.definition, systemPrompt: `data:image/not-real;base64,${encodedKey}` } };
+  const disguisedResult = await scanAgentSnapshot(new TextEncoder().encode(JSON.stringify(disguised)), "disguised.agent.json");
+  assert.equal(disguisedResult.ok, false);
+  assert.match(disguisedResult.hardErrors.join(" "), /private key|credential/i);
+
   const spoofed = { ...base, profile: { ...base.profile, displayName: "Researcher\u202Egpj.exe" } };
   const spoofedResult = await scanAgentSnapshot(new TextEncoder().encode(JSON.stringify(spoofed)), "spoofed.agent.json");
   assert.equal(spoofedResult.ok, false);
   assert.match(spoofedResult.hardErrors.join(" "), /control characters|Unicode direction/i);
+});
+
+test("matches Buzz's 64 KiB prompt and visible text import limits", async () => {
+  const base = JSON.parse(await readFile(referenceUrl, "utf8"));
+  const oversized = { ...base, definition: { ...base.definition, systemPrompt: "a".repeat((64 * 1024) + 1) } };
+  const oversizedResult = await scanAgentSnapshot(new TextEncoder().encode(JSON.stringify(oversized)), "oversized.agent.json");
+  assert.equal(oversizedResult.ok, false);
+  assert.match(oversizedResult.hardErrors.join(" "), /64 KiB UTF-8 limit/i);
+
+  for (const character of ["\u00ad", "\u034f", "\u3164", "\u{e007f}"]) {
+    const hidden = { ...base, definition: { ...base.definition, systemPrompt: `Review${character}this` } };
+    const hiddenResult = await scanAgentSnapshot(new TextEncoder().encode(JSON.stringify(hidden)), "hidden.agent.json");
+    assert.equal(hiddenResult.ok, false, `U+${character.codePointAt(0)?.toString(16)}`);
+    assert.match(hiddenResult.hardErrors.join(" "), /cannot show safely/i);
+  }
+
+  const emoji = { ...base, definition: { ...base.definition, systemPrompt: "Review with care 👩‍💻 ❤️" } };
+  const emojiResult = await scanAgentSnapshot(new TextEncoder().encode(JSON.stringify(emoji)), "emoji.agent.json");
+  assert.equal(emojiResult.ok, true, emojiResult.hardErrors.join(" "));
 });
 
 test("accepts only the dedicated Buzz PNG snapshot metadata channel", async () => {

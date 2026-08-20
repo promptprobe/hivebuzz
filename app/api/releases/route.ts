@@ -7,6 +7,7 @@ interface DownloadRow {
 }
 
 const RELEASE_KEYS = CATALOG_RELEASES.map((release) => release.key);
+const RELEASE_KEY_SET = new Set(RELEASE_KEYS);
 
 function json(data: unknown, init: ResponseInit = {}, cacheable = false) {
   const headers = new Headers(init.headers);
@@ -26,9 +27,10 @@ async function readDownloadCounts(db: Pick<D1Database, "prepare">) {
     WHERE release_key IN (${placeholders})
   `).bind(...RELEASE_KEYS).all<DownloadRow>();
 
-  const downloadCounts = Object.fromEntries(RELEASE_KEYS.map((key) => [key, 0]));
+  const downloadCounts: Record<string, number> = {};
   for (const row of result.results) {
-    if (row.release_key in downloadCounts) downloadCounts[row.release_key] = Number(row.count);
+    const count = Math.max(0, Math.floor(Number(row.count)));
+    if (RELEASE_KEY_SET.has(row.release_key) && count > 0) downloadCounts[row.release_key] = count;
   }
   return downloadCounts;
 }

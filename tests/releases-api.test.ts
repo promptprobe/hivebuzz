@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { getReleaseResponse } from "../app/api/releases/route";
 
-const QUIET_RESEARCHER_KEY = "agent:agent.quiet-researcher@1.0.0";
+const QUIET_RESEARCHER_KEY = "agent:agent.quiet-researcher@1.1.0";
 
 function databaseWithCounts(statements: string[]) {
   return {
@@ -50,7 +50,7 @@ test("keeps the full compatibility catalog while sourcing manifests from code", 
 
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("cache-control"), "no-store");
-  assert.equal(payload.releases.length, 10);
+  assert.equal(payload.releases.length, 24);
   assert.equal(payload.releases.find((release) => release.key === QUIET_RESEARCHER_KEY)?.downloadCount, 9);
   assert.equal(statements.length, 1);
 });

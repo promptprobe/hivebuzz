@@ -6,8 +6,10 @@ import { recordFromManifest, releaseKeyFor, validateManifest } from "../lib/hive
 import { scanAgentSnapshot } from "../lib/snapshot-scan";
 
 test("accepts every bounded catalog release with a stable key", () => {
-  assert.equal(CATALOG_RELEASES.length, 10);
+  assert.equal(CATALOG_RELEASES.length, 24);
   assert.equal(new Set(CATALOG_RELEASES.map((release) => release.key)).size, CATALOG_RELEASES.length);
+
+  const categoryCounts = new Map<string, number>();
 
   for (const release of CATALOG_RELEASES) {
     const validation = validateManifest(release.manifest, { allowRelativeArtifact: true });
@@ -15,8 +17,19 @@ test("accepts every bounded catalog release with a stable key", () => {
     assert.equal(release.key, releaseKeyFor(release.manifest));
     assert.equal(release.downloadCount, 0);
     assert.ok(["research", "development", "design", "operations", "data", "marketing", "security", "personal"].includes(release.manifest.release.category));
+    categoryCounts.set(release.manifest.release.category, (categoryCounts.get(release.manifest.release.category) ?? 0) + 1);
     assert.deepEqual(recordFromManifest(release.manifest, release.addedAt), release);
   }
+  assert.deepEqual([...categoryCounts.entries()].sort(), [
+    ["data", 3],
+    ["design", 3],
+    ["development", 3],
+    ["marketing", 3],
+    ["operations", 3],
+    ["personal", 3],
+    ["research", 3],
+    ["security", 3],
+  ]);
 });
 
 test("rejects hidden fields, unsafe Agent capabilities, secrets, and bad artifact suffixes", () => {
@@ -56,6 +69,12 @@ test("rejects hidden fields, unsafe Agent capabilities, secrets, and bad artifac
   const spoofed = structuredClone(base);
   spoofed.release.name = "Safe agent\u202Egpj.exe";
   assert.match(validateManifest(spoofed, { allowRelativeArtifact: true }).errors.join(" "), /control characters|Unicode direction/i);
+
+  for (const hiddenCharacter of ["\u00ad", "\u3164"]) {
+    const invisible = structuredClone(base);
+    invisible.release.summary = `Safe${hiddenCharacter} looking summary text`;
+    assert.match(validateManifest(invisible, { allowRelativeArtifact: true }).errors.join(" "), /invisible control characters/i);
+  }
 
   const knownSecrets = [
     `AIza${"A".repeat(35)}`,

@@ -1,5 +1,3 @@
-import type { ReleaseRecord } from "@/lib/hive-contract";
-
 const CACHE_MILLISECONDS = 30_000;
 
 export type DownloadCounts = Record<string, number>;
@@ -40,7 +38,7 @@ export function loadCatalogDownloadCounts(): Promise<DownloadCounts> {
   return promise;
 }
 
-export function mergeDownloadCounts(releases: ReleaseRecord[], counts: DownloadCounts): ReleaseRecord[] {
+export function mergeDownloadCounts<T extends { key: string; downloadCount: number }>(releases: T[], counts: DownloadCounts): T[] {
   return releases.map((release) => {
     const nextCount = counts[release.key];
     const mergedCount = nextCount === undefined ? release.downloadCount : Math.max(release.downloadCount, nextCount);

@@ -1,8 +1,9 @@
-import { containsKnownSecret, containsSpoofingControl, isSafePublicLabel } from "./security-patterns";
+import { containsKnownSecret, containsProhibitedBuzzText, isSafePublicLabel } from "./security-patterns";
 
 const JSON_MAX_BYTES = 5 * 1024 * 1024;
 const PNG_MAX_BYTES = 10 * 1024 * 1024;
 const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
+const SYSTEM_PROMPT_MAX_BYTES = 64 * 1024;
 const PNG_SIGNATURE = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
 const SNAPSHOT_KEYWORD = "buzz_agent_snapshot";
 
@@ -74,6 +75,13 @@ function boundedOptionalString(value: unknown, label: string, max: number, error
   }
 }
 
+function boundedOptionalUtf8(value: unknown, label: string, maxBytes: number, errors: string[]) {
+  if (value === undefined || value === null) return;
+  if (typeof value !== "string" || new TextEncoder().encode(value).byteLength > maxBytes) {
+    errors.push(`${label} exceeds Buzz's ${maxBytes / 1024} KiB UTF-8 limit.`);
+  }
+}
+
 function boundedStringArray(value: unknown, label: string, maxItems: number, maxLength: number, errors: string[]) {
   if (
     value !== undefined &&
@@ -104,7 +112,7 @@ function possibleSecrets(value: unknown, path = "snapshot"): string[] {
 function possibleSpoofingControls(value: unknown, path = "snapshot"): string[] {
   const matches: string[] = [];
   if (typeof value === "string") {
-    if (containsSpoofingControl(value)) matches.push(path);
+    if (containsProhibitedBuzzText(value)) matches.push(path);
   } else if (Array.isArray(value)) {
     value.forEach((item, index) => matches.push(...possibleSpoofingControls(item, `${path}[${index}]`)));
   } else if (isRecord(value)) {
@@ -254,7 +262,10 @@ function validateSnapshot(input: unknown, errors: string[]): AgentSnapshot | nul
     ], "Snapshot definition", errors);
     if (!isSafePublicLabel(definition.name, 1, 120)) errors.push("Agent definition name must use visible characters without control characters.");
     if (definition.sourceIsBuiltIn !== undefined && typeof definition.sourceIsBuiltIn !== "boolean") errors.push("sourceIsBuiltIn must be a boolean.");
-    boundedOptionalString(definition.systemPrompt, "System prompt", 256 * 1024, errors);
+    boundedOptionalUtf8(definition.systemPrompt, "System prompt", SYSTEM_PROMPT_MAX_BYTES, errors);
+    if (typeof definition.systemPrompt === "string" && containsProhibitedBuzzText(definition.systemPrompt)) {
+      errors.push("System prompt contains a character that Buzz cannot show safely in an import review.");
+    }
     boundedOptionalString(definition.runtime, "Runtime", 120, errors);
     boundedOptionalString(definition.model, "Model", 160, errors);
     boundedOptionalString(definition.provider, "Provider", 120, errors);

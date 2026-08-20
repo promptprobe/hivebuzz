@@ -8,7 +8,7 @@ import {
   type RiskLevel,
   type ValidationResult,
 } from "./hive-contract";
-import { containsKnownSecret, containsSpoofingControl, isSafePublicLabel } from "./security-patterns";
+import { containsKnownSecret, containsProhibitedBuzzText, isSafePublicLabel } from "./security-patterns";
 
 export * from "./hive-contract";
 
@@ -66,7 +66,7 @@ function hasSecretMaterial(value: unknown, path = "manifest"): string[] {
 function hasSpoofingMaterial(value: unknown, path = "manifest"): string[] {
   const matches: string[] = [];
   if (typeof value === "string") {
-    if (containsSpoofingControl(value)) matches.push(path);
+    if (containsProhibitedBuzzText(value)) matches.push(path);
   } else if (Array.isArray(value)) {
     value.forEach((item, index) => matches.push(...hasSpoofingMaterial(item, `${path}[${index}]`)));
   } else if (isRecord(value)) {

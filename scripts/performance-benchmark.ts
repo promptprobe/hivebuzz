@@ -98,7 +98,10 @@ async function measureRendering() {
 async function measureClientAssets() {
   const manifestPath = join(distClient, ".vite/manifest.json");
   const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as Record<string, ManifestEntry>;
-  const roots = ["virtual:vinext-app-browser-entry", "components/hive-app.tsx", "components/site-footer.tsx"];
+  const roots = [
+    "virtual:vinext-app-browser-entry",
+    "virtual:vite-rsc/client-references/group/facade:virtual:cloudflare/worker-entry",
+  ];
   const visited = new Set<string>();
 
   function visit(key: string) {
